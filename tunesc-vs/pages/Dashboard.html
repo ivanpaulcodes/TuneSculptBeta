@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuneSculpt Dashboard</title>
+    <link rel="stylesheet" href="/tunesc-vs/styles/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar/Navigation -->
+    <div class="sidebar">
+        <h1>TuneSculpt</h1>
+        <div class="user-profile">UserN</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Libraries</a>
+        </nav>
+        
+        <div class="signout-container">
+            <button id="signoutButton">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Connect to Spotify -->
+        <div class="connect-spotify">
+            <button id="spotifyButton">Connect to Spotify</button>
+        </div>
+        
+        <!-- Mood Selection -->
+        <div class="mood-selection">
+            <h2>How are we feeling today?</h2>
+            <div class="mood-buttons">
+                <button class="mood-button" data-mood="happy">😊</button>
+                <button class="mood-button" data-mood="neutral">😐</button>
+                <button class="mood-button" data-mood="sad">😢</button>
+                <!-- Add more mood buttons as needed -->
+            </div>
+        </div>
+
+        <!-- Customized Playlist -->
+        <div class="customized-playlist">
+            
+            
+        </div>
+    </div>
+
+
+    <script>
+        // JSON.parse reverses the effect of JSON.stringify, converting the string back to an object
+        let UserCreds = JSON.parse(sessionStorage.getItem("user-creds"));
+        let UserInfo = JSON.parse(sessionStorage.getItem("user-info"));
+    
+        // Update username display
+        if (UserInfo && UserInfo.name) {
+            document.querySelector(".user-profile").textContent = UserInfo.name;
+        }
+    
+        let SignoutBtn = document.getElementById('signoutButton');
+    
+        let Signout = () => {
+            sessionStorage.removeItem("user-creds");
+            sessionStorage.removeItem("user-info");
+            window.location.href = 'Login.html';
+        }
+    
+        // Add event listener to the sign-out button
+        if (SignoutBtn) {
+            SignoutBtn.addEventListener('click', Signout);
+        }
+    </script>
+    
+</body>
+</html>
