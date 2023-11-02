@@ -1,29 +1,32 @@
-const {onRequest} = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
+const axios = require("axios");
 const logger = require("firebase-functions/logger");
 
-
-const functions = require('firebase-functions');
-const axios = require('axios');
+// Retrieve your Spotify credentials from Firebase environment configuration
+const clientId = functions.config().spotify.client_id;
+const clientSecret = functions.config().spotify.client_secret;
 
 exports.spotifyLogin = functions.https.onRequest(async (req, res) => {
-    const code = req.query.code; // The code from Spotify's redirect
-    const redirect_uri = "https://accounts.spotify.com/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=YOUR_FIREBASE_FUNCTION_URL&scope=REQUIRED_SCOPES";
+  const code = req.query.code;
 
-    try {
-        const response = await axios.post('https://accounts.spotify.com/api/token', null, {
-            params: {
-                grant_type: "authorization_code",
-                code: code,
-                redirect_uri: redirect_uri,
-                client_id: "3298c0aed7f940dab9fc68c1d0bbc812",
-                client_secret: "4dcdf67d414b4f0192db89958fa16108"
-            }
-        });
-        
-        // Save response.data.access_token (and optionally refresh_token) to Firebase Realtime Database or Firestore, associated with the user.
-        
-        res.redirect('http://127.0.0.1:5500/tunesc-vs/pages/Dashboard.html'); // Redirect back to app
-    } catch (error) {
-        res.status(500).send(error);
-    }
+  const redirectUri = "http://localhost:5500/callback";
+
+  try {
+    const response = await axios.post("https://accounts.spotify.com/api/token", null, {
+      params: {
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret
+        }
+    });
+
+    logger.log("Access Token:", response.data.access_token);
+
+    res.redirect("http://127.0.0.1:5500/tunesc-vs/pages/Dashboard.html");
+  } catch (error) {
+    logger.error("Error during Spotify login:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
